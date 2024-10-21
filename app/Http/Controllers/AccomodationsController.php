@@ -5,12 +5,22 @@ namespace App\Http\Controllers;
 use App\Models\Accomodations;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+/**
+ * @OA\Tag(name="Accomodations", description="Accommodations API Endpoints")
+ */
 
 class AccomodationsController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/V1/accomodations",
+     *     tags={"Accomodations"},
+     *     summary="Get all accomodations",
+     *     @OA\Response(response="200", description="Successful retrieval of properties"),
+     *     @OA\Response(response="400", description="No accomodations at the moment")
+     * )
+     */
     public function getAccomodations(){
-
-        //select * from accomodations
         $accomodations = Accomodations::all(); //[]
 
         if(count($accomodations) > 0){
@@ -22,7 +32,18 @@ class AccomodationsController extends Controller
         return response()->json(['message' => 'No accomodations at the moment'], 400);
     }
 
+
     //metodo para buscar un alojamiento
+    /**
+     * @OA\Get(
+     *     path="/api/V1/accomodation/{id}",
+     *     tags={"Accomodations"},
+     *     summary="Find a accomodation by ID",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Response(response="200", description="Successful retrieval of accomodation"),
+     *     @OA\Response(response="400", description="Accomodation not found")
+     * )
+     */
     public function get_accomodation_by_id($id){
         //select * from accomodations where id = ?
         $accomodation = Accomodations::find($id); // {} / null
@@ -35,6 +56,24 @@ class AccomodationsController extends Controller
     }
 
     //metodo para registrar un alojamiento
+    /**
+     * @OA\Post(
+     *     path="/api/V1/accomodation",
+     *     tags={"Accomodations"},
+     *     summary="Store a new accomodation",
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","description","address","image"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="address", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response="201", description="Successfully registered"),
+     *     @OA\Response(response="400", description="Validation Error")
+     * )
+     */
     public function store(Request $request){
 
         //validar entrada de datos
@@ -43,7 +82,7 @@ class AccomodationsController extends Controller
             'name' => 'required|string|max:70',
             'address' => 'required|string|max:100',
             'description' => 'required|string',
-            'image' => 'required|string'
+            // 'image' => 'required|string'
         ]);
 
         //en base a las regla de validaciones verificar si se cumple o no se cumple
@@ -60,13 +99,35 @@ class AccomodationsController extends Controller
         $accomodation->name = $request->input('name'); //name
         $accomodation->address = $request->input('address'); //name
         $accomodation->description = $request->input('description'); //name
-        $accomodation->image = $request->input('image'); //name
+        //$accomodation->image = $request->input('image'); //name
+        $accomodation->image = "https://res.cloudinary.com/dmddi5ncx/image/upload/v1727886846/practicas/laravel/alojamiento2_fx7q75.webp";
         $accomodation->save();
 
         return response()->json(['message' => 'Successfully registered'], 201);
     }
 
     //metodo para actualizar un alojamiento
+    /**
+     * @OA\Put(
+     *     path="/api/V1/accomodation/{id}",
+     *     tags={"Accomodations"},
+     *     summary="Update an existing accomodation",
+     *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name","description","address","image"},
+     *             @OA\Property(property="name", type="string"),
+     *             @OA\Property(property="description", type="string"),
+     *             @OA\Property(property="address", type="string"),
+     *             @OA\Property(property="image", type="string")
+     *         )
+     *     ),
+     *     @OA\Response(response="200", description="Successfully updated"),
+     *     @OA\Response(response="400", description="Validation Error")
+     * )
+     */
+
     public function update(Request $request, $id){
         //validar entrada de datos
         $validator = Validator::make($request->all(), [

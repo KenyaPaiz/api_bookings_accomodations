@@ -6,9 +6,40 @@ use App\Models\Bookings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+/**
+ * @OA\Tag(name="Bookings", description="Bookings API Endpoints")
+ */
 
 class BookingsController extends Controller
 {
+    /**
+     * @OA\Get(
+     *     path="/api/V1/bookings",
+     *     summary="Get all bookings",
+     *     tags={"Bookings"},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Bookings found",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", description="ID of the booking"),
+     *                 @OA\Property(property="user", type="string", description="Name of the user"),
+     *                 @OA\Property(property="accomodation", type="string", description="Name of the accomodation"),
+     *                 @OA\Property(property="check_in_date", type="string", format="date", description="Check-in date"),
+     *                 @OA\Property(property="check_out_date", type="string", format="date", description="Check-out date"),
+     *                 @OA\Property(property="total_amount", type="number", format="float", description="Total amount"),
+     *                 @OA\Property(property="status", type="string", description="Status of the booking")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="No bookings found"
+     *     )
+     * )
+     */
     public function get_bookings(){
         $bookings = Bookings::join('users','bookings.user_id', 'users.id')->join('accomodations','bookings.accomodation_id', 'accomodations.id')->select('bookings.*', 'users.name as user', 'accomodations.name as accomodation')->get();
 
@@ -20,6 +51,35 @@ class BookingsController extends Controller
     }
 
     //metodo para actualizar el estado de la reservacion
+    /**
+     * @OA\Patch(
+     *     path="/api/V1/status_booking/{id}",
+     *     summary="Update the status of a booking",
+     *     tags={"Bookings"},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         description="ID of the booking",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"status"},
+     *             @OA\Property(property="status", type="string", example="CANCELLED")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Status successfully updated"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation Error"
+     *     )
+     * )
+     */
     public function update_status(Request $request, $id){
 
         //validando la entrada de datos
@@ -41,8 +101,34 @@ class BookingsController extends Controller
         return response()->json(['message' => 'status successfully updated'], 200);
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/V1/booking",
+     *     summary="Register a new booking",
+     *     tags={"Bookings"},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"booking", "check_in_date", "check_out_date", "total_amount", "accomodation_id", "user_id"},
+     *             @OA\Property(property="booking", type="string", maxLength=10, example="BK123456"),
+     *             @OA\Property(property="check_in_date", type="string", format="date", example="2024-12-10"),
+     *             @OA\Property(property="check_out_date", type="string", format="date", example="2024-12-15"),
+     *             @OA\Property(property="total_amount", type="number", example=500.00),
+     *             @OA\Property(property="accomodation_id", type="integer", example=1),
+     *             @OA\Property(property="user_id", type="integer", example=1)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Successfully registered"
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Validation Error"
+     *     )
+     * )
+     */
     public function store(Request $request){
-
         //validaciones de datos
         $validator = Validator::make($request->all(), [
             'booking' => 'required|string|max:10',
@@ -76,6 +162,59 @@ class BookingsController extends Controller
         return response()->json(['message' => 'Successfully registered'], 201);
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/V1/bookings/calendar/{id_accomodation}",
+     *     summary="Get accommodation bookings calendar",
+     *     tags={"Bookings"},
+     *     @OA\Parameter(
+     *         name="id_accomodation",
+     *         in="path",
+     *         description="ID of the accommodation",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *         name="start_date",
+     *         in="query",
+     *         description="Start date in Y-m-d format",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date", example="2024-12-10")
+     *     ),
+     *     @OA\Parameter(
+     *         name="end_date",
+     *         in="query",
+     *         description="End date in Y-m-d format",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date", example="2024-12-15")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Bookings found",
+     *         @OA\JsonContent(
+     *             type="array",
+     *             @OA\Items(
+     *                 type="object",
+     *                 @OA\Property(property="id", type="integer", description="ID of the booking"),
+     *                 @OA\Property(property="user", type="string", description="Name of the user"),
+     *                 @OA\Property(property="accomodation", type="string", description="Name of the accomodation"),
+     *                 @OA\Property(property="check_in_date", type="string", format="date", description="Check-in date"),
+     *                 @OA\Property(property="check_out_date", type="string", format="date", description="Check-out date"),
+     *                 @OA\Property(property="total_amount", type="number", format="float", description="Total amount"),
+     *                 @OA\Property(property="status", type="string", description="Status of the booking")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="No bookings found"
+     *     ),
+     *     @OA\Response(
+     *         response=422,
+     *         description="The date range cannot exceed 3 months"
+     *     )
+     * )
+     */
     public function calendar_accomodation_bookings(Request $request, $id_accomodation){
 
         //validando las fechas
