@@ -19,7 +19,12 @@
                     "400": {
                         "description": "No accomodations at the moment"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/V1/accomodation/{id}": {
@@ -46,7 +51,12 @@
                     "400": {
                         "description": "Accomodation not found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
@@ -84,9 +94,6 @@
                                     },
                                     "address": {
                                         "type": "string"
-                                    },
-                                    "image": {
-                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -101,7 +108,12 @@
                     "400": {
                         "description": "Validation Error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/V1/accomodation": {
@@ -145,7 +157,12 @@
                     "400": {
                         "description": "Validation Error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/V1/bookings": {
@@ -205,7 +222,12 @@
                     "400": {
                         "description": "No bookings found"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/V1/status_booking/{id}": {
@@ -252,7 +274,12 @@
                     "400": {
                         "description": "Validation Error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/V1/booking": {
@@ -316,7 +343,12 @@
                     "400": {
                         "description": "Validation Error"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/V1/bookings/calendar/{id_accomodation}": {
@@ -412,7 +444,133 @@
                     "422": {
                         "description": "The date range cannot exceed 3 months"
                     }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/V1/users": {
+            "get": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get list of users",
+                "operationId": "d8a637ffd86b190b24fd11ac295eb68e",
+                "responses": {
+                    "200": {
+                        "description": "List of Users",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Abner"
+                                            },
+                                            "email": {
+                                                "type": "string",
+                                                "example": "user@example.com"
+                                            },
+                                            "password": {
+                                                "type": "string",
+                                                "example": "hashed_password"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
+            }
+        },
+        "/api/V1/login": {
+            "post": {
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Login",
+                "operationId": "888df9f42ef83350b02de91a19847ccb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "example": "user@example.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful login",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "user": {
+                                            "type": "string",
+                                            "example": "user@example.com"
+                                        },
+                                        "token": {
+                                            "type": "string",
+                                            "example": "token123"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "You are not authorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Enter the token returned at login",
+                "name": "Authorization",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     },
@@ -424,6 +582,10 @@
         {
             "name": "Bookings",
             "description": "Bookings API Endpoints"
+        },
+        {
+            "name": "Users",
+            "description": "Users"
         }
     ]
 }

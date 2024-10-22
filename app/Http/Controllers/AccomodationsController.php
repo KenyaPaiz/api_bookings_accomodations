@@ -16,6 +16,7 @@ class AccomodationsController extends Controller
      *     path="/api/V1/accomodations",
      *     tags={"Accomodations"},
      *     summary="Get all accomodations",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Response(response="200", description="Successful retrieval of properties"),
      *     @OA\Response(response="400", description="No accomodations at the moment")
      * )
@@ -39,6 +40,7 @@ class AccomodationsController extends Controller
      *     path="/api/V1/accomodation/{id}",
      *     tags={"Accomodations"},
      *     summary="Find a accomodation by ID",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\Response(response="200", description="Successful retrieval of accomodation"),
      *     @OA\Response(response="400", description="Accomodation not found")
@@ -61,6 +63,7 @@ class AccomodationsController extends Controller
      *     path="/api/V1/accomodation",
      *     tags={"Accomodations"},
      *     summary="Store a new accomodation",
+     *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -112,6 +115,7 @@ class AccomodationsController extends Controller
      *     path="/api/V1/accomodation/{id}",
      *     tags={"Accomodations"},
      *     summary="Update an existing accomodation",
+     *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
      *     @OA\RequestBody(
      *         required=true,
@@ -119,8 +123,7 @@ class AccomodationsController extends Controller
      *             required={"name","description","address","image"},
      *             @OA\Property(property="name", type="string"),
      *             @OA\Property(property="description", type="string"),
-     *             @OA\Property(property="address", type="string"),
-     *             @OA\Property(property="image", type="string")
+     *             @OA\Property(property="address", type="string")
      *         )
      *     ),
      *     @OA\Response(response="200", description="Successfully updated"),
@@ -134,8 +137,7 @@ class AccomodationsController extends Controller
             //reglas para cada entrada de dato
             'name' => 'required|string|max:70',
             'address' => 'required|string|max:100',
-            'description' => 'required|string',
-            'image' => 'required|string'
+            'description' => 'required|string'
         ]);
 
         //en base a las regla de validaciones verificar si se cumple o no se cumple
@@ -152,8 +154,7 @@ class AccomodationsController extends Controller
         if($accomodation != null){
             $accomodation->name = $request->input('name'); //name
             $accomodation->address = $request->input('address'); //name
-            $accomodation->description = $request->input('description'); //name
-            $accomodation->image = $request->input('image'); //name
+            $accomodation->description = $request->input('description'); 
             $accomodation->update();
 
             return response()->json(['message' => 'correctly updated'], 200);

@@ -16,6 +16,7 @@ class BookingsController extends Controller
      * @OA\Get(
      *     path="/api/V1/bookings",
      *     summary="Get all bookings",
+     *     security={{"bearerAuth":{}}},
      *     tags={"Bookings"},
      *     @OA\Response(
      *         response=200,
@@ -55,6 +56,7 @@ class BookingsController extends Controller
      * @OA\Patch(
      *     path="/api/V1/status_booking/{id}",
      *     summary="Update the status of a booking",
+     *     security={{"bearerAuth":{}}},
      *     tags={"Bookings"},
      *     @OA\Parameter(
      *         name="id",
@@ -105,6 +107,7 @@ class BookingsController extends Controller
      * @OA\Post(
      *     path="/api/V1/booking",
      *     summary="Register a new booking",
+     *     security={{"bearerAuth":{}}},
      *     tags={"Bookings"},
      *     @OA\RequestBody(
      *         required=true,
@@ -166,6 +169,7 @@ class BookingsController extends Controller
      * @OA\Get(
      *     path="/api/V1/bookings/calendar/{id_accomodation}",
      *     summary="Get accommodation bookings calendar",
+     *     security={{"bearerAuth":{}}},
      *     tags={"Bookings"},
      *     @OA\Parameter(
      *         name="id_accomodation",
