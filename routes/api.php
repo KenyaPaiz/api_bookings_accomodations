@@ -29,3 +29,9 @@ Route::middleware('auth:sanctum')->group(function() {
 //Login de acceso
 Route::post('/V1/login', [UserController::class, 'login']);
 Route::get('/V1/users', [UserController::class, 'getUsers']);
+#redireccionando cuando la persona no coloca el token
+Route::get('/v1/auth', function (){
+    return response()->json([
+        'message' => 'Access denied. Please log in to continue'
+    ], 401);
+})->name('login');
